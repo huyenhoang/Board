@@ -1,5 +1,5 @@
-var NUMBER_OF_COLS = 8,
-	NUMBER_OF_ROWS = 8,
+var NUMBER_OF_COLS = 6,
+	NUMBER_OF_ROWS = 6,
 	BLOCK_SIZE = 100;
 
 var BLOCK_COLOUR_1 = '#456fff',
@@ -365,97 +365,97 @@ function defaultPositions()
 		[
 			{
 				"piece": PIECE_CASTLE,
-				"row": 7,
+				"row": 5,
 				"col": 0,
 				"status": IN_PLAY
 			},
 			{
 				"piece": PIECE_ROUKE,
-				"row": 7,
+				"row": 5,
 				"col": 1,
 				"status": IN_PLAY
 			},
 			{
 				"piece": PIECE_BISHOP,
-				"row": 7,
+				"row": 5,
 				"col": 2,
 				"status": IN_PLAY
 			},
 			{
 				"piece": PIECE_KING,
-				"row": 7,
+				"row": 5,
 				"col": 3,
 				"status": IN_PLAY
 			},	
 			{
 				"piece": PIECE_QUEEN,
-				"row": 7,
+				"row": 5,
 				"col": 4,
 				"status": IN_PLAY
 			},
 			{
 				"piece": PIECE_BISHOP,
-				"row": 7,
+				"row": 5,
 				"col": 5,
 				"status": IN_PLAY
 			},
 			{
 				"piece": PIECE_ROUKE,
-				"row": 7,
+				"row": 5,
 				"col": 6,
 				"status": IN_PLAY
 			},
 			{
 				"piece": PIECE_CASTLE,
-				"row": 7,
+				"row": 4,
 				"col": 7,
 				"status": IN_PLAY
 			},
 			{
 				"piece": PIECE_PAWN,
-				"row": 6,
+				"row": 4,
 				"col": 0,
 				"status": IN_PLAY
 			},
 			{
 				"piece": PIECE_PAWN,
-				"row": 6,
+				"row": 4,
 				"col": 1,
 				"status": IN_PLAY
 			},
 			{
 				"piece": PIECE_PAWN,
-				"row": 6,
+				"row": 4,
 				"col": 2,
 				"status": IN_PLAY
 			},
 			{
 				"piece": PIECE_PAWN,
-				"row": 6,
+				"row": 4,
 				"col": 3,
 				"status": IN_PLAY
 			},	
 			{
 				"piece": PIECE_PAWN,
-				"row": 6,
+				"row": 4,
 				"col": 4,
 				"status": IN_PLAY
 			},
 			{
 				"piece": PIECE_PAWN,
-				"row": 6,
+				"row": 4,
 				"col": 5,
 				"status": IN_PLAY
 			},
 			{
 				"piece": PIECE_PAWN,
-				"row": 6,
+				"row": 4,
 				"col": 6,
 				"status": IN_PLAY
 			},
 			{
 				"piece": PIECE_PAWN,
-				"row": 6,
+				"row": 4,
 				"col": 7,
 				"status": IN_PLAY
 			}
