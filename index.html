@@ -1,31 +1,73 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+<head>
+    <title>HTML5 Canvas - Chess board</title>
+    <meta charset="utf-8" />
+    <style>
+        button{border-radius:4px; margin:3px; margin-bottom:10px; background-color:#CFCEC2; font-size:medium}
+    </style>
+
+    <script src='constant.js'></script>
+    <script src='chess_board.js'></script>
+        <script src='defaultPosition.js'></script>
+</head>
     
-    <head>
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title>Blitz</title>
-        <meta name="description" content="Chess for the 21st century">
-        <link rel="stylesheet" href="main.css">
-        <script src='chess_board.js'></script>
-    </head>
-    <body onload='draw();'>
-    
-        <h1>Blitz Chess</h1>
-        <h2>Chess for the 21st century</h2>
-        
-        <p>
-            Welcome to Blitz, a modern way to play chess that promotes customization, faster game play, dynamic strategy and metagames.
-        </p>
-        
-        <p>
-            <em>Blitz is a different from traditional chess sites.</em>
-            Blitz has some unique features like custom playing boards, discussion forms, and  customized playing pieces through unlockable themes. But most importantly, Blitz features a revolutionary way to play chess never seen before - custom starting position for the Knights, Bishop, and Rook. Gone are the days of developing an excitment for chess at an early age only to lose it later on when one discover that at the highest level, the game is all about who can memorize all the possibility moves rather than strategy.
-        </p>
-        
-        <div>
-            <canvas id="chess" width="600" height="600"></canvas>
+	<body onload="draw()">
+    	<div width="800" height="800">
+        	<button onClick="OnNewGame()">New</button> 
+        	<button onClick="OnStartGame()">Start</button> 
+            <span style="margin-left:190px; font-size:xx-large; color:#808000"><Strong>Chess Game</Strong></span>
+            <button style="margin-left:180px" onClick="OnRedo()">Redo</button>
+            <button onClick="OnUndo()">Undo</button>
         </div>
-    </body>    
-        <footer></footer>
+		<div>
+			<canvas id="chessboard" width="800" height="800"></canvas>
+		</div>
+	</body>
+    <script>
+		var bButtonLock = false;
+		var bRedo = false;
+		
+		function OnNewGame()
+		{
+			clearChessInfo();
+			curGamestate = GS_NONE;
+			draw();
+		}
+		function OnStartGame()
+		{
+			if(curGamestate != GS_START)
+			{
+				alert("Start Game!");
+				curGamestate = GS_START;
+			}
+		}
+		function OnRedo()
+		{
+			if(bButtonLock) return;
+			if(nHistoryIndex != -1)
+			{
+				bButtonLock = true;
+				bRedo = REDO;
+				setTimeout(ReadHistory, 300);
+				setTimeout(ReadHistory, 1000); 
+				setTimeout(function(){bButtonLock = false;}, 1500);
+				writeAllChessInfo();
+			}
+		}
+		function OnUndo()
+		{
+			if(bButtonLock) return;
+			if((nHistoryIndex+1) != arrHistory.length && arrHistory.length !=0)
+			{	
+				bButtonLock = true;
+				bRedo = UNDO;
+				setTimeout(ReadHistory, 300);
+				setTimeout(ReadHistory, 1000); 
+				setTimeout(function(){bButtonLock = false;}, 1500);
+				writeAllChessInfo();
+			}
+		}
+		
+	</script>
 </html>

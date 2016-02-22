@@ -1,244 +1,26 @@
-var NUMBER_OF_COLS = 8,
-	NUMBER_OF_ROWS = 8,
-	BLOCK_SIZE = 100;
-
-var BLOCK_COLOUR_1 = '#000000',
-	BLOCK_COLOUR_2 = '#ffffff',
-	HIGHLIGHT_COLOUR = '#fb0006';
-	BLACK_COLOUR = '#000000';
 
 var piecePositions = null;
 
-var PIECE_PAWN = 0,
-	PIECE_CASTLE = 1,
-	PIECE_ROUKE = 2,
-	PIECE_BISHOP = 3,
-	PIECE_QUEEN = 4,
-	PIECE_KING = 5,
-	CHANGED_PAWN = 0;
-	IN_PLAY = 0,
-	OUT_PLAY = 1,
-	pieces = null,
+var pieces = null,
 	ctx = null,
 	json = null,
 	canvas = null,
-	BLACK_TEAM = 0,
-	WHITE_TEAM = 1,
-	SELECT_LINE_WIDTH = 5,
+	CHANGED_PAWN = 0,
 	currentTurn = BLACK_TEAM,
 	selectedPiece = null,
-	clickLock = false;
-
+	clickLock = false,
+	prevClickedBlock = null,
+	arrHistory = [],
+	nHistoryIndex = -1;
+	curGamestate = GS_NONE;
+	
 //engine
 var SrcPos, DstPos, CurPieceCode,
-    CurPlayer = 0, PawnPos, bPawnEnd = true, 
+    CurPlayer = 0, PawnPos, bPawnEnd = false, 
+	bCheckQueenState = false,bMovedPiece = false,
     aBoard = [], board = [],
-    iSquare = 120, CONST_TEN = 10, CONST_FIFTEEN = 15, CONST_M = 10000,
-    piecesCosts = [0,99,0,306,297,495,846], 
-    rowsCosts = [-1,0,1,2,2,1,0,-1]; 
-
-function defaultPositions() {
-	json = {
-		"white":
-			[
-				{
-					"piece": PIECE_CASTLE,
-					"row": 0,
-					"col": 0,
-					"status": IN_PLAY
-				},
-				{
-					"piece": PIECE_ROUKE,
-					"row": 0,
-					"col": 1,
-					"status": IN_PLAY
-				},
-				{
-					"piece": PIECE_BISHOP,
-					"row": 0,
-					"col": 2,
-					"status": IN_PLAY
-				},
-				{
-					"piece": PIECE_KING,
-					"row": 0,
-					"col": 3,
-					"status": IN_PLAY
-				},
-				{
-					"piece": PIECE_QUEEN,
-					"row": 0,
-					"col": 4,
-					"status": IN_PLAY
-				},
-				{
-					"piece": PIECE_BISHOP,
-					"row": 0,
-					"col": 5,
-					"status": IN_PLAY
-				},
-				{
-					"piece": PIECE_ROUKE,
-					"row": 0,
-					"col": 6,
-					"status": IN_PLAY
-				},
-				{
-					"piece": PIECE_CASTLE,
-					"row": 0,
-					"col": 7,
-					"status": IN_PLAY
-				},
-				{
-					"piece": PIECE_PAWN,
-					"row": 1,
-					"col": 0,
-					"status": IN_PLAY
-				},
-				{
-					"piece": PIECE_PAWN,
-					"row": 1,
-					"col": 1,
-					"status": IN_PLAY
-				},
-				{
-					"piece": PIECE_PAWN,
-					"row": 1,
-					"col": 2,
-					"status": IN_PLAY
-				},
-				{
-					"piece": PIECE_PAWN,
-					"row": 1,
-					"col": 3,
-					"status": IN_PLAY
-				},
-				{
-					"piece": PIECE_PAWN,
-					"row": 1,
-					"col": 4,
-					"status": IN_PLAY
-				},
-				{
-					"piece": PIECE_PAWN,
-					"row": 1,
-					"col": 5,
-					"status": IN_PLAY
-				},
-				{
-					"piece": PIECE_PAWN,
-					"row": 1,
-					"col": 6,
-					"status": IN_PLAY
-				},
-				{
-					"piece": PIECE_PAWN,
-					"row": 1,
-					"col": 7,
-					"status": IN_PLAY
-				}
-			],
-		"black":
-			[
-				{
-					"piece": PIECE_CASTLE,
-					"row": 7,
-					"col": 0,
-					"status": IN_PLAY
-				},
-				{
-					"piece": PIECE_ROUKE,
-					"row": 7,
-					"col": 1,
-					"status": IN_PLAY
-				},
-				{
-					"piece": PIECE_BISHOP,
-					"row": 7,
-					"col": 2,
-					"status": IN_PLAY
-				},
-				{
-					"piece": PIECE_KING,
-					"row": 7,
-					"col": 3,
-					"status": IN_PLAY
-				},
-				{
-					"piece": PIECE_QUEEN,
-					"row": 7,
-					"col": 4,
-					"status": IN_PLAY
-				},
-				{
-					"piece": PIECE_BISHOP,
-					"row": 7,
-					"col": 5,
-					"status": IN_PLAY
-				},
-				{
-					"piece": PIECE_ROUKE,
-					"row": 7,
-					"col": 6,
-					"status": IN_PLAY
-				},
-				{
-					"piece": PIECE_CASTLE,
-					"row": 7,
-					"col": 7,
-					"status": IN_PLAY
-				},
-				{
-					"piece": PIECE_PAWN,
-					"row": 6,
-					"col": 0,
-					"status": IN_PLAY
-				},
-				{
-					"piece": PIECE_PAWN,
-					"row": 6,
-					"col": 1,
-					"status": IN_PLAY
-				},
-				{
-					"piece": PIECE_PAWN,
-					"row": 6,
-					"col": 2,
-					"status": IN_PLAY
-				},
-				{
-					"piece": PIECE_PAWN,
-					"row": 6,
-					"col": 3,
-					"status": IN_PLAY
-				},
-				{
-					"piece": PIECE_PAWN,
-					"row": 6,
-					"col": 4,
-					"status": IN_PLAY
-				},
-				{
-					"piece": PIECE_PAWN,
-					"row": 6,
-					"col": 5,
-					"status": IN_PLAY
-				},
-				{
-					"piece": PIECE_PAWN,
-					"row": 6,
-					"col": 6,
-					"status": IN_PLAY
-				},
-				{
-					"piece": PIECE_PAWN,
-					"row": 6,
-					"col": 7,
-					"status": IN_PLAY
-				}
-			]
-	};
-}
+    iSquare = 120;
+     
 
 function SetupChessboard() {
     var x, y;
@@ -249,6 +31,14 @@ function SetupChessboard() {
          9,  9,  9,  9,  9,  9,  9,  9,
         13, 11, 12, 14, 10, 12, 11, 13
     ];
+	
+	var EnemyTeam = json.white;
+	
+	// Variables for random pos of kinght, bishop, rook
+	var rand = [[3,4,5], [3,5,4], [4,3,5], [4,5,3], [5,3,4], [5,4,3]];
+	var nIndex1 = Math.floor(Math.random( ) * 6); 		
+	var nIndex2 = Math.floor(Math.random( ) * 6); 
+	
     for (y=0; y<12; y++) {
         for (x=0; x<10; x++) {
             if (x<1 || y<2 || x>8 || y>9) {
@@ -259,7 +49,20 @@ function SetupChessboard() {
                 board[y*10+x] = 0;
             } else {
                 // pieces
+				console.log(initial[i], ( initial[i]|16));
+				if(i<3){
+					EnemyTeam[i].piece = rand[nIndex1][i] - 1;
+					board[y*10+x] = rand[nIndex1][i++] | 16; 
+					continue;
+				}
+				if(i>4 && i<8){
+					EnemyTeam[i].piece = rand[nIndex2][i-5] - 1;
+					board[y*10+x] = rand[nIndex2][i-5] | 16; 
+					i++; 
+					continue;
+				}
                 board[y*10+x] = initial[i++] | 16;
+				
             }
         }
     }
@@ -284,6 +87,7 @@ function movesForPiece(piece) {
 }
 
 function executeMove(O, p, n, m, g) {
+	
     board[p] = n;
     if (m) {
         board[g] = board[m];
@@ -312,7 +116,48 @@ function getPieceAtBlock(clickedBlock) {
 	return getPieceAtBlockForTeam(team, clickedBlock);
 }
 
-function SetPieceInfo(sBoardIndex, tBoardIndex){
+
+
+function ReadHistory(){
+	
+	if(bRedo == UNDO) nHistoryIndex++;
+	
+	var sIndex = arrHistory[nHistoryIndex].FromBoardPos;
+	var tIndex = arrHistory[nHistoryIndex].ToBoardPos;
+	
+	if(bRedo==UNDO)
+	{
+		board[tIndex] = arrHistory[nHistoryIndex].FromBoardVal;
+		board[sIndex] = 0;
+		SetJsonInfo(sIndex, tIndex,  arrHistory[nHistoryIndex].WhereTurn, false);
+	}
+	else
+	{
+		board[sIndex] = arrHistory[nHistoryIndex].FromBoardVal;
+		SetJsonInfo(tIndex, sIndex,  arrHistory[nHistoryIndex].WhereTurn, false);
+		
+		
+		if(arrHistory[nHistoryIndex].DiedEnemyIndex < 16)
+		{
+			var Eteam = (arrHistory[nHistoryIndex].WhereTurn === WHITE_TEAM ? json.black : json.white);
+			sIndex = arrHistory[nHistoryIndex].DiedEnemyIndex;
+			Eteam[sIndex].status = IN_PLAY;
+			board[tIndex] = arrHistory[nHistoryIndex].ToBoardVal;
+		}
+		else
+		{
+			board[tIndex] = 0;
+		}
+		nHistoryIndex--;
+	}
+	
+	drawPieces();
+	
+}
+
+function SetJsonInfo(sBoardIndex, tBoardIndex, Turn, bSave, sPieceVal, tPieceVal){
+	//Set Info of Pieces
+
 	var iPieceCounter = 0;
 	var sblock =  {
 		"row": Math.floor((sBoardIndex - 21) / 10),
@@ -324,9 +169,21 @@ function SetPieceInfo(sBoardIndex, tBoardIndex){
 		"col": (tBoardIndex - 21) % 10
 	};
 	
-	var team = (currentTurn === WHITE_TEAM ? json.white : json.black),
-		opposite = (currentTurn !== WHITE_TEAM ? json.white : json.black);
+	var team = (Turn === WHITE_TEAM ? json.white : json.black),
+		opposite = (Turn !== WHITE_TEAM ? json.white : json.black);
 
+	for (iPieceCounter = 0; iPieceCounter < team.length; iPieceCounter++) {
+		curPiece = team[iPieceCounter];
+		if (curPiece.status === IN_PLAY && curPiece.col === sblock.col && curPiece.row === sblock.row) {
+			team[iPieceCounter].col = tblock.col;	
+			team[iPieceCounter].row = tblock.row;
+			if(bPawnEnd) team[iPieceCounter].piece = PIECE_KING;
+			if(!bSave && arrHistory[nHistoryIndex].PawnChange == true)
+				team[iPieceCounter].piece = PIECE_PAWN;
+			break;
+		}
+	}
+	
 	for (iPieceCounter = 0; iPieceCounter < opposite.length; iPieceCounter++) {
 		curPiece = opposite[iPieceCounter];
 		if (curPiece.status === IN_PLAY && curPiece.col === tblock.col && curPiece.row === tblock.row) {
@@ -334,16 +191,28 @@ function SetPieceInfo(sBoardIndex, tBoardIndex){
 			break;
 		}
 	}
-	
-	for (iPieceCounter = 0; iPieceCounter < team.length; iPieceCounter++) {
-		curPiece = team[iPieceCounter];
-		if (curPiece.status === IN_PLAY && curPiece.col === sblock.col && curPiece.row === sblock.row) {
-			team[iPieceCounter].col = tblock.col;	
-			team[iPieceCounter].row = tblock.row;
-			if(bPawnEnd) team[iPieceCounter].piece = PIECE_KING;
-			break;
+
+	if(bSave)
+	{
+		var history ={//piece moved FromPos -> ToPos
+			"FromBoardPos"	:sBoardIndex,
+			"ToBoardPos"  	:tBoardIndex,
+			"WhereTurn"		:currentTurn,
+			"DiedEnemyIndex":iPieceCounter,
+			"FromBoardVal"	:sPieceVal,
+			"ToBoardVal"	:tPieceVal,
+			"PawnChange"	:bPawnEnd,
 		}
+		
+		nHistoryIndex++;
+		if(nHistoryIndex != arrHistory.length)
+			arrHistory.splice(nHistoryIndex);
+		
+		arrHistory.push(history);
 	}
+	
+	 bPawnEnd=false;
+	
 }
 
 function screenToBlock(x, y) {
@@ -470,70 +339,6 @@ function selectPiece(pieceAtBlock) {
 	selectedPiece = pieceAtBlock;
 }
 
-function checkIfPieceClicked(clickedBlock) {
-	var pieceAtBlock = getPieceAtBlock(clickedBlock);
-
-	if(selectedPiece !== null && selectedPiece !== pieceAtBlock)
-		removeSelection(selectedPiece);
-		
-	if (pieceAtBlock !== null) {
-		selectPiece(pieceAtBlock);
-	}
-}
-
-function board_click(ev) {
-	if (clickLock)
-        return;
-		
-	var x = ev.clientX - canvas.offsetLeft,
-		y = ev.clientY - canvas.offsetTop,
-		
-	clickedBlock = screenToBlock(x, y);
-	
-	var nIndex = 21 + clickedBlock.row * 10 + clickedBlock.col;
-    CurPieceCode = (board[nIndex] ^ CurPlayer) & CONST_FIFTEEN;
-    
-	if (CurPieceCode > 8) {
-        DstPos = nIndex;
-        checkIfPieceClicked(clickedBlock);
-		SrcPos=DstPos;
-		bPawnEnd = false;
-    } else if (SrcPos && CurPieceCode<9) {
-        // clicked on the opponent piece or empty space
-		DstPos = nIndex;
-		CurPieceCode = board[SrcPos] & CONST_FIFTEEN;
-		// pawn promotion
-		if ((CurPieceCode & 7) == 1 & (DstPos < 29 | DstPos > 90))
-		{
-			CurPieceCode = 14 - CHANGED_PAWN ^ CurPlayer;
-			bPawnEnd = true;
-		}
-		// verify player move and execute it
-		ChessEngine(0,0,0,21,PawnPos,1);
-		// Call A.aBoard. after some delay
-		if (CurPlayer) {
-			clickLock = true;
-			setTimeout("ChessEngine(0,0,0,21,PawnPos,2/*ply*/);ChessEngine(0,0,0,21,PawnPos,1);clickLock=false;",250);
-		}
-	}
-}
-
-function drawTeamOfPieces(teamOfPieces, bBlackTeam) {
-	var iPieceCounter;
-
-	// Loop through each piece and draw it on the canvas	
-	for (iPieceCounter = 0; iPieceCounter < teamOfPieces.length; iPieceCounter++) {
-		drawPiece(teamOfPieces[iPieceCounter], bBlackTeam);
-	}
-}
-
-function drawPieces() {
-	drawBoard();
-	drawTeamOfPieces(json.black, true);
-	drawTeamOfPieces(json.white, false);
-}
-
-
 function ChessEngine(w,c,h,e,S,s) {
     var t, o, L, E, d, O = e,
         N = -CONST_M*CONST_M,
@@ -591,14 +396,19 @@ function ChessEngine(w,c,h,e,S,s) {
                                            J,
                                            s);
                                     if (!h && s == 1 && SrcPos == O && CurPieceCode == n && p == DstPos && L >= -CONST_M) {
-                                     //   DrawPieces();
-									    SetPieceInfo(SrcPos, DstPos);
-										drawPieces();
-										currentTurn = (currentTurn === WHITE_TEAM ? BLACK_TEAM : WHITE_TEAM);
-                                        iSquare--;
-                                        PawnPos = J;
-										selectedPiece = null;
-                                        return PawnPos;
+										
+                                    	bMovedPiece = true;
+										if(!bCheckQueenState)
+										{
+                                    	    SetJsonInfo(SrcPos, DstPos, currentTurn, true, o, r);
+											drawPieces();
+											currentTurn = (currentTurn === WHITE_TEAM ? BLACK_TEAM : WHITE_TEAM);
+											iSquare--;
+											PawnPos = J;
+											selectedPiece = null;
+											writeAllChessInfo();
+											return PawnPos;
+										}
                                     }
                                     J = (q-1 | C>1) || m || (!s | d | r | o<CONST_FIFTEEN) || ChessEngine(0,0,0,21,0,0) > CONST_M;
                                     undoMove(O, p, o, r, m, g);
@@ -638,10 +448,170 @@ function ChessEngine(w,c,h,e,S,s) {
     return (N + CONST_M*CONST_M && (N > 1924-K | d)) ? N : 0;
 }
 
+function checkIfPieceClicked(clickedBlock) {
+	var pieceAtBlock = getPieceAtBlock(clickedBlock);
+
+	if(selectedPiece !== null && selectedPiece !== pieceAtBlock)
+		removeSelection(selectedPiece);
+		
+	if (pieceAtBlock !== null) {
+		selectPiece(pieceAtBlock);
+	}
+}
+
+function CheckQueenState(){
+	bMovedPiece = false;
+	bCheckQueenState = false;
+	ChessEngine(0,0,0,21,PawnPos,2/*ply*/);
+	ChessEngine(0,0,0,21,PawnPos,1);
+	
+	if(!bMovedPiece)
+	{
+		alert("You Win!!!");
+		curGamestate = GS_WIN;
+		return;
+	}
+	
+	bMovedPiece = false;
+	bCheckQueenState = true;
+	ChessEngine(0,0,0,21,PawnPos,2/*ply*/);
+	ChessEngine(0,0,0,21,PawnPos,1);
+	if(!bMovedPiece)
+	{
+		alert("You lose");
+		curGamestate = GS_LOSS;
+	}
+	bCheckQueenState = false;
+	clickLock=false;
+}
+
+function SwitchChessPosition(fromPos, toPos)
+{
+
+	var fromBoardIndex = fromPos.row * 10 + fromPos.col + 21;
+	var toBoardIndex = toPos.row * 10 + toPos.col + 21;
+	if(board[fromBoardIndex] == board[toBoardIndex])
+		return;
+		
+	var Val = board[fromBoardIndex];
+	board[fromBoardIndex] = board[toBoardIndex];
+	board[toBoardIndex] = Val;
+	
+	var Team = json.black;
+	var frompiece = Team[fromPos.col].piece;
+	Team[fromPos.col].piece = Team[toPos.col].piece;
+	Team[toPos.col].piece = frompiece;
+	
+	drawPieces();
+}
+
+function board_click(ev) {
+	if (clickLock)
+        return;
+		
+	var x = ev.clientX - canvas.offsetLeft,
+		y = ev.clientY - canvas.offsetTop,
+		
+	clickedBlock = screenToBlock(x, y);
+	if(curGamestate != GS_START)
+	{
+		if(clickedBlock.row == 7 && clickedBlock.col != 3 && clickedBlock.col != 4)
+		{//If selected piece is not King or Queen.
+			if(prevClickedBlock == null)
+			{
+				prevClickedBlock = clickedBlock;	
+			}
+			else if(prevClickedBlock !== clickedBlock)
+			{
+				SwitchChessPosition(prevClickedBlock, clickedBlock);
+				prevClickedBlock = null;
+			}
+		}
+		else
+		{
+			prevClickedBlock = null;
+		}
+	}
+		
+	var nIndex = 21 + clickedBlock.row * 10 + clickedBlock.col;
+    CurPieceCode = (board[nIndex] ^ CurPlayer) & CONST_FIFTEEN;
+    
+	if (CurPieceCode > 8) {
+        DstPos = nIndex;
+        checkIfPieceClicked(clickedBlock);
+		SrcPos=DstPos;
+    } else{
+		if (SrcPos && CurPieceCode<9 && curGamestate == GS_START) {
+			// clicked on the opponent piece or empty space
+			DstPos = nIndex;
+			CurPieceCode = board[SrcPos] & CONST_FIFTEEN;
+			// pawn promotion
+			if ((CurPieceCode & 7) == 1 & (DstPos < 29 | DstPos > 90))
+			{
+				CurPieceCode = 14 - CHANGED_PAWN ^ CurPlayer;
+				bPawnEnd = true;
+			}
+			// verify player move and execute it
+			ChessEngine(0,0,0,21,PawnPos,1);
+			// Call A.aBoard. after some delay
+			if (CurPlayer) {
+				clickLock = true;
+				setTimeout("CheckQueenState()",250);
+			}
+		}
+	}
+}
+
+function drawTeamOfPieces(teamOfPieces, bBlackTeam) {
+	var iPieceCounter;
+
+	// Loop through each piece and draw it on the canvas	
+	for (iPieceCounter = 0; iPieceCounter < teamOfPieces.length; iPieceCounter++) {
+		drawPiece(teamOfPieces[iPieceCounter], bBlackTeam);
+	}
+}
+
+function drawPieces() {
+	drawBoard();
+	drawTeamOfPieces(json.black, true);
+	drawTeamOfPieces(json.white, false);
+}
+
+function writeAllChessInfo()
+{
+	localStorage.setItem('JsonInfo', JSON.stringify(json));
+	localStorage.setItem('BoardInfo', JSON.stringify(board));
+	localStorage.setItem('HistoryInfo', JSON.stringify(arrHistory));
+	localStorage.setItem('HistoryIndex', nHistoryIndex);
+}
+function clearChessInfo()
+{
+	localStorage.clear();
+}
+function getAllChessInfo(){
+
+	if(typeof(Storage) !== "undefined") {
+
+		var PrevJson = localStorage.getItem('JsonInfo');
+		
+		if(PrevJson != null){
+			json = JSON.parse(PrevJson);
+			board = JSON.parse(localStorage.getItem('BoardInfo'));
+			arrHistory = JSON.parse(localStorage.getItem('HistoryInfo'));
+			nHistoryIndex = localStorage.getItem('HistoryIndex');
+			curGamestate = GS_START;
+			return;
+		}
+	}
+	
+	InitPieceInfo();
+	SetupChessboard();
+	
+}
 function draw() {
 	// Main entry point got the HTML5 chess board example
-
-	canvas = document.getElementById('chess');
+	
+	canvas = document.getElementById('chessboard');
 
 	// Canvas supported?
 	if (canvas.getContext) {
@@ -649,12 +619,12 @@ function draw() {
 
 		// Calculdate the precise block size
 		BLOCK_SIZE = canvas.height / NUMBER_OF_ROWS;
-
+		
 		CurPieceCode = 100;
 		CurPlayer = PawnPos = 0;
-		SetupChessboard();
-		defaultPositions();
-
+		
+		getAllChessInfo();
+		
 		// Draw pieces
 		pieces = new Image();
 		pieces.src = 'pieces.png';
@@ -664,4 +634,4 @@ function draw() {
 	} else {
 		alert("Canvas not supported!");
 	}
-} 
+}
