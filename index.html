@@ -1,17 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>HTML5 Canvas - Chess board</title>
+    <title>Blitz Chess | Chess board</title>
     <meta charset="utf-8" />
-    <style>
-        button{border-radius:4px; margin:3px; margin-bottom:10px; background-color:#CFCEC2; font-size:medium}
-    </style>
-
+    <!-- Custom CSS -->
+    <link type="text/css" rel="stylesheet" href="style.css">
+    <!-- Custom Boostrap -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
     <script src='constant.js'></script>
     <script src='chess_board.js'></script>
-        <script src='defaultPosition.js'></script>
+    <script src='defaultPosition.js'></script>
 </head>
-    
 	<body onload="draw()">
     	<div width="800" height="800">
         	<button onClick="OnNewGame()">New</button> 
@@ -24,50 +23,10 @@
 			<canvas id="chessboard" width="800" height="800"></canvas>
 		</div>
 	</body>
-    <script>
-		var bButtonLock = false;
-		var bRedo = false;
-		
-		function OnNewGame()
-		{
-			clearChessInfo();
-			curGamestate = GS_NONE;
-			draw();
-		}
-		function OnStartGame()
-		{
-			if(curGamestate != GS_START)
-			{
-				alert("Start Game!");
-				curGamestate = GS_START;
-			}
-		}
-		function OnRedo()
-		{
-			if(bButtonLock) return;
-			if(nHistoryIndex != -1)
-			{
-				bButtonLock = true;
-				bRedo = REDO;
-				setTimeout(ReadHistory, 300);
-				setTimeout(ReadHistory, 1000); 
-				setTimeout(function(){bButtonLock = false;}, 1500);
-				writeAllChessInfo();
-			}
-		}
-		function OnUndo()
-		{
-			if(bButtonLock) return;
-			if((nHistoryIndex+1) != arrHistory.length && arrHistory.length !=0)
-			{	
-				bButtonLock = true;
-				bRedo = UNDO;
-				setTimeout(ReadHistory, 300);
-				setTimeout(ReadHistory, 1000); 
-				setTimeout(function(){bButtonLock = false;}, 1500);
-				writeAllChessInfo();
-			}
-		}
-		
-	</script>
+    <!-- App Scripts -->
+    <script src="app.js"></script>
+    <!-- jquery, popper, bootstrap -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>
 </html>
