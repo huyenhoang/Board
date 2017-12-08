@@ -11,17 +11,21 @@
     <script src='chess_board.js'></script>
     <script src='defaultPosition.js'></script>
 </head>
-	<body onload="draw()">
-    	<div width="800" height="800">
-        	<button onClick="OnNewGame()">New</button> 
-        	<button onClick="OnStartGame()">Start</button> 
-            <span style="margin-left:190px; font-size:xx-large; color:#808000"><Strong>Chess Game</Strong></span>
-            <button style="margin-left:180px" onClick="OnRedo()">Redo</button>
-            <button onClick="OnUndo()">Undo</button>
+	<body onload="draw()" width="800" height="800">
+        <div class="container">
+            <div class="row">
+                <div class="btn-group" role="group" aria-label="Basic example">
+                    <button onClick="OnNewGame()" type="button" class="btn btn-primary">New Game</button>
+                    <button onClick="OnStartGame()" type="button" class="btn btn-success">Start Game</button>
+                    <span><Strong>Blitz Chess</Strong></span>
+                    <button onClick="OnRedo()" type="button" class="btn btn-light">Undo Move</button>
+                    <button onClick="OnUndo()" type="button" class="btn btn-dark">Redo Move</button>
+                </div>
+            </div>
+            <div class="row">
+                <canvas id="chessboard" width="800" height="800"></canvas>
+            </div>
         </div>
-		<div>
-			<canvas id="chessboard" width="800" height="800"></canvas>
-		</div>
 	</body>
     <!-- App Scripts -->
     <script src="app.js"></script>
